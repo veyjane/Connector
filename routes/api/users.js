@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { check, validationResult } = require('express-validator/check');
-
+const gravatar = require('gravatar');
+const { check, validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
+const User = require('../../models/User');
 //@route    POST api/users
 //@desc     Register user
 //@access   Public
@@ -17,12 +19,52 @@ router.post(
       'Please enter a password with 6 or more characters'
     ).isLength({ min: 6 })
   ],
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-    res.send('User route');
+
+    const { name, email, password } = req.body;
+
+    try {
+      //see if user exists
+      let user = await User.findOne({ email });
+      //邮箱已注册过，说明对象存在
+      if (user) {
+        //与前面status返回数组的格式相同
+        return res
+          .status(400)
+          .json({ errors: [{ msg: 'User already exists' }] });
+      }
+
+      //Get users gravatar
+      const avatar = gravatar.url(email, {
+        s: '200',
+        r: 'pg',
+        d: 'mm'
+      });
+
+      user = new User({
+        name,
+        email,
+        avatar,
+        password
+      });
+      //Encrypt password
+
+      //generate random salt
+      const salt = await bcrypt.genSalt(10);
+
+      user.password = await bcrypt.hash(password, salt);
+
+      await user.save();
+      //Return jsonwebtoken
+      res.send('User registered');
+    } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
+    }
   }
 );
 
