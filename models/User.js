@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+//生成Schema类，定义好数据类型
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -23,4 +24,5 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
+//生成Model类
 module.exports = User = mongoose.model('user', UserSchema);

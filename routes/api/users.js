@@ -1,8 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const gravatar = require('gravatar');
-const { check, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const config = require('config');
+const { check, validationResult } = require('express-validator');
 const User = require('../../models/User');
 //@route    POST api/users
 //@desc     Register user
@@ -28,7 +30,7 @@ router.post(
     const { name, email, password } = req.body;
 
     try {
-      //see if user exists
+      //see if user exists,块中临时生成user对象
       let user = await User.findOne({ email });
       //邮箱已注册过，说明对象存在
       if (user) {
@@ -45,6 +47,7 @@ router.post(
         d: 'mm'
       });
 
+      //实例化User Model
       user = new User({
         name,
         email,
@@ -60,7 +63,23 @@ router.post(
 
       await user.save();
       //Return jsonwebtoken
-      res.send('User registered');
+      //payload中存放实际信息userid
+      const payload = {
+        user: {
+          id: user.id
+        }
+      };
+
+      jwt.sign(
+        payload,
+        config.get('jwtSecret'),
+        { expiresIn: 36000 },
+        (err, token) => {
+          //回调函数返回token生成的结果
+          if (err) throw err;
+          res.json({ token });
+        }
+      );
     } catch (err) {
       console.error(err.message);
       res.status(500).send('Server error');
