@@ -9,6 +9,7 @@ const User = require('../../models/User');
 //@route    GET api/auth
 //@desc     Test route
 //@access   Public
+//根据token登录验证
 router.get('/', auth, async (req, res) => {
   try {
     //根据token的payload中复制到req.user的id查询user，但不返回密码
@@ -23,6 +24,7 @@ router.get('/', auth, async (req, res) => {
 //@route    POST api/auth
 //@desc     Authentcate user & get token
 //@access   Public
+//根据邮箱密码登录验证
 router.post(
   '/',
   [

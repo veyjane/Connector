@@ -28,6 +28,7 @@ const ProfileSchema = new mongoose.Schema({
   githubusername: {
     type: String
   },
+  //多段经历用数组保存
   experience: [
     {
       title: {

@@ -12,10 +12,9 @@ const User = require('../../models/User');
 //@access   Private
 router.get('/me', auth, async (req, res) => {
   try {
-    const profile = await Profile.findOne({ user: req.user.id }).populate(
-      'user',
-      ['name', 'avatar']
-    ); //用populate来将profile与user做关联查询,bring in 'name' 'avatar' from 'user'
+    const profile = await Profile.findOne({
+      user: req.user.id
+    }).populate('user', ['name', 'avatar']); //用populate来将profile与user做关联查询,bring in 'name' 'avatar' from 'user'
 
     if (!profile) {
       return res.status(400).json({ msg: 'There is no profile for this user' });
@@ -114,6 +113,7 @@ router.post(
 //@route    GET api/profile
 //@desc     Get all profiles
 //@access   Public
+//查询所有profile
 router.get('/', async (req, res) => {
   try {
     const profiles = await Profile.find().populate('user', ['name', 'avatar']);

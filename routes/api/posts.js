@@ -133,7 +133,7 @@ router.put('/like/:id', auth, async (req, res) => {
 });
 
 //@route    PUT api/posts/unlike/:id
-//@desc     Like a post
+//@desc     Unlike a post
 //@access   Private
 router.put('/unlike/:id', auth, async (req, res) => {
   try {
@@ -206,7 +206,7 @@ router.post(
 );
 
 //@route    DELETE api/posts/comment/:id/:comment_id
-//@desc     Delete omment
+//@desc     Delete Comment
 //@access   Private
 router.delete('/comment/:id/:comment_id', auth, async (req, res) => {
   try {
